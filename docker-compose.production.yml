@@ -1,0 +1,68 @@
+# Voyage — private deployment on this host, built from this fork's source.
+#
+# Based on upstream's own docker-compose.yml, but builds the "aio"
+# (all-in-one) target locally from this fork's Dockerfile instead of
+# pulling ghcr.io/seanmorley15/adventurelog:latest — so future rebranding
+# commits actually land on rebuild. Kept as a separate file (not editing
+# docker-compose.yml directly) so future rebases from upstream don't
+# conflict with it.
+#
+# Usage (from repo root):
+#   docker compose -f docker-compose.production.yml --env-file .env up -d --build
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: aio
+    image: voyage-adventurelog:latest
+    container_name: voyage_al_app
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      SITE_URL: ${SITE_URL:-https://voyage.ddnds.com}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      PGHOST: db
+      POSTGRES_DB: database
+      POSTGRES_USER: adventure
+      PORT: "3000"
+    ports:
+      # Bound to localhost only — the host's nginx proxies here.
+      - "127.0.0.1:${HOST_PORT:-3010}:80"
+    volumes:
+      - voyage_al_media:/code/media/
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3 -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:80/health')\""
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 120s
+
+  db:
+    image: postgis/postgis:16-3.5
+    container_name: voyage_al_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: database
+      POSTGRES_USER: adventure
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - voyage_al_db_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U adventure -d database"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  voyage_al_db_data:
+  voyage_al_media:
