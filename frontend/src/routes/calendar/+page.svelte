@@ -16,6 +16,7 @@
 	import CalendarAgenda from '$lib/components/calendar/CalendarAgenda.svelte';
 	import CalendarSidebar from '$lib/components/calendar/CalendarSidebar.svelte';
 	import EventDetailsModal from '$lib/components/calendar/EventDetailsModal.svelte';
+	import { DEFAULT_TIMEZONE } from '$lib/dateUtils';
 	import type {
 		CalendarApiEvent,
 		CalendarDisplayEvent,
@@ -32,7 +33,7 @@
 
 	export let data: PageData;
 
-	const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const userTimezone = DEFAULT_TIMEZONE;
 
 	let apiEvents: CalendarApiEvent[] = (data.props.initialEvents || []) as CalendarApiEvent[];
 	let displayEvents: CalendarDisplayEvent[] = [];

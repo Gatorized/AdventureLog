@@ -3,12 +3,22 @@ import { DateTime } from 'luxon';
 import type { Checklist, Collection, Lodging, Note, Transportation, Visit } from './types';
 import { isAllDay, isVisitAllDay, allDayDatePart } from '$lib';
 
+// Private, single-instance deployment — everyone's in Quebec, so default to
+// Eastern Canada rather than guessing from the visiting browser/device's
+// timezone. Using Toronto, not Montreal: IANA tzdata dropped
+// "America/Montreal" as a deprecated backward-compat alias, so it's no
+// longer in Intl.supportedValuesOf('timeZone') — Node silently treats it
+// as an unrecognized zone (it wouldn't appear in the timezone picker's
+// list). Toronto is the current canonical zone for the same UTC
+// offset/DST rules.
+export const DEFAULT_TIMEZONE = 'America/Toronto';
+
 /**
  * Convert a UTC ISO date to a datetime-local value in the specified timezone
  */
 export function toLocalDatetime(
 	utcDate: string | null,
-	timezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone
+	timezone: string = DEFAULT_TIMEZONE
 ): string {
 	if (!utcDate) return '';
 	const dt = DateTime.fromISO(utcDate, { zone: 'UTC' });
@@ -25,7 +35,7 @@ export function toLocalDatetime(
  */
 export function toUTCDatetime(
 	localDate: string,
-	timezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone,
+	timezone: string = DEFAULT_TIMEZONE,
 	allDay: boolean = false
 ): string | null {
 	if (!localDate) return null;
@@ -152,7 +162,7 @@ function getEntityDateRange(entity: Visit | Transportation | Lodging | Note | Ch
 	let end: DateTime | null = null;
 	let isAllDayEvent = false;
 	try {
-		let timezone = (entity as Visit).timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+		let timezone = (entity as Visit).timezone || DEFAULT_TIMEZONE;
 		if ('start_date' in entity && 'end_date' in entity) {
 			isAllDayEvent = isVisitAllDay(entity.start_date, entity.end_date);
 			if (isAllDayEvent) {
@@ -214,7 +224,7 @@ function getCollectionDateRange(collection: Collection): {
 
 	// Assume collection always uses full datetimes in ISO string
 	const isAllDay = collection.start_date.length === 10 && collection.end_date.length === 10;
-	const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const timezone = DEFAULT_TIMEZONE;
 	const start = isAllDay
 		? DateTime.fromISO(collection.start_date, { zone: 'UTC' }).startOf('day')
 		: DateTime.fromISO(collection.start_date, { zone: 'UTC' }).setZone(timezone);

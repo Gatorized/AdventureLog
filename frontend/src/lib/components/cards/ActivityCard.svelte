@@ -11,7 +11,7 @@
 	import ClockIcon from '~icons/mdi/clock';
 	import CaloriesIcon from '~icons/mdi/fire';
 	import LocationIcon from '~icons/mdi/map-marker';
-	import { formatDateInTimezone } from '$lib/dateUtils';
+	import { formatDateInTimezone, DEFAULT_TIMEZONE } from '$lib/dateUtils';
 	import { getDistance, getElevation } from '$lib';
 
 	export let activity: Activity;
@@ -208,7 +208,7 @@
 				<div>
 					Started: {formatDateInTimezone(
 						activity.start_date,
-						activity.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
+						activity.timezone || DEFAULT_TIMEZONE
 					)}
 				</div>
 				{#if activity.timezone}

@@ -30,6 +30,7 @@
 	import Earth from '~icons/mdi/earth';
 	import ChevronRight from '~icons/mdi/chevron-right';
 	import CompassRose from '~icons/mdi/compass-rose';
+	import { DEFAULT_TIMEZONE } from '$lib/dateUtils';
 
 	export let data: PageData;
 
@@ -58,7 +59,7 @@
 	$: inviteCount = data.props.inviteCount;
 	$: loadError = data.props.loadError;
 
-	const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const userTimezone = DEFAULT_TIMEZONE;
 	$: measurementSystem = user?.measurement_system || 'metric';
 	$: greetingName = user?.first_name || user?.username || '';
 

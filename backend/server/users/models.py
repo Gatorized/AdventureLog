@@ -65,7 +65,7 @@ class CustomUser(AbstractUser):
     public_profile = models.BooleanField(default=False)
     disable_password = models.BooleanField(default=False)
     measurement_system = models.CharField(max_length=10, choices=[('metric', 'Metric'), ('imperial', 'Imperial')], default='metric')
-    default_currency = models.CharField(max_length=5, choices=CURRENCY_CHOICES, default='USD')
+    default_currency = models.CharField(max_length=5, choices=CURRENCY_CHOICES, default='CAD')
     map_style = models.CharField(max_length=32, choices=BASEMAP_CHOICES, default='default')
     
     

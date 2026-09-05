@@ -24,7 +24,7 @@
 	import OpenInNew from '~icons/mdi/open-in-new';
 	import MapMarkerDistanceIcon from '~icons/mdi/map-marker-distance';
 	import CardAccountDetails from '~icons/mdi/card-account-details';
-	import { formatDateInTimezone, formatAllDayDate } from '$lib/dateUtils';
+	import { formatDateInTimezone, formatAllDayDate, DEFAULT_TIMEZONE } from '$lib/dateUtils';
 	import TransportationModal from '$lib/components/transportation/TransportationModal.svelte';
 	import CashMultiple from '~icons/mdi/cash-multiple';
 	import { DEFAULT_CURRENCY, formatMoney, toMoneyValue } from '$lib/money';
@@ -256,7 +256,7 @@
 		};
 	}
 
-	const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC';
+	const localTimeZone = DEFAULT_TIMEZONE ?? 'UTC';
 	const getTimezoneLabel = (zone?: string | null) => zone ?? localTimeZone;
 	const getTimezoneTip = (zone?: string | null) => {
 		const label = getTimezoneLabel(zone);

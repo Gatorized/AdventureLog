@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { t } from 'svelte-i18n';
 	import { onMount } from 'svelte';
+	import { DEFAULT_TIMEZONE } from '$lib/dateUtils';
 
-	export let selectedTimezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	export let selectedTimezone: string = DEFAULT_TIMEZONE;
 	export let label: string | null = null;
 	// Generate a unique ID for this component instance
 	const uniqueId = Date.now().toString(36) + Math.random().toString(36).substring(2);

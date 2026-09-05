@@ -15,7 +15,8 @@
 		validateDateRange,
 		formatUTCDate,
 		toDateOnlyLocal,
-		toTimedLocalDefault
+		toTimedLocalDefault,
+		DEFAULT_TIMEZONE
 	} from '$lib/dateUtils';
 	import { onMount } from 'svelte';
 	import { isAllDay, isVisitAllDay, allDayDatePart, SPORT_TYPE_CHOICES } from '$lib';
@@ -44,7 +45,7 @@
 
 	// Props
 	export let collection: Collection | null = null;
-	export let selectedStartTimezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	export let selectedStartTimezone: string = DEFAULT_TIMEZONE;
 	export let utcStartDate: string | null = null;
 	export let utcEndDate: string | null = null;
 	export let note: string | null = null;
@@ -815,10 +816,10 @@
 		}).localDate;
 
 		if (!selectedStartTimezone) {
-			selectedStartTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+			selectedStartTimezone = DEFAULT_TIMEZONE;
 		}
 		if (!selectedStartTimezone) {
-			selectedStartTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+			selectedStartTimezone = DEFAULT_TIMEZONE;
 		}
 
 		// Check if Strava is enabled by making a simple API call

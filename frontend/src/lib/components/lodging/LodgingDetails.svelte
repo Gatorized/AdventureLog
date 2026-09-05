@@ -6,7 +6,8 @@
 		updateUTCDate,
 		validateDateRange,
 		toDateOnlyLocal,
-		toTimedLocalDefault
+		toTimedLocalDefault,
+		DEFAULT_TIMEZONE
 	} from '$lib/dateUtils';
 	import type { Collection, Lodging, MoneyValue } from '$lib/types';
 	import LocationSearchMap from '../shared/LocationSearchMap.svelte';
@@ -88,7 +89,7 @@
 		is_public: true
 	};
 
-	let selectedTimezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	let selectedTimezone: string = DEFAULT_TIMEZONE;
 	let localStartDate: string = '';
 	let localEndDate: string = '';
 	let allDay: boolean = true;

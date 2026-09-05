@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { formatDateInTimezone } from '$lib/dateUtils';
+	import { formatDateInTimezone, DEFAULT_TIMEZONE } from '$lib/dateUtils';
 	import type { StravaActivity } from '$lib/types';
 	import { createEventDispatcher } from 'svelte';
 	import { t } from 'svelte-i18n';
@@ -106,8 +106,8 @@
 						<span
 							>{formatDateInTimezone(
 								activity.start_date,
-								activity.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
-							)} ({activity.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone})</span
+								activity.timezone || DEFAULT_TIMEZONE
+							)} ({activity.timezone || DEFAULT_TIMEZONE})</span
 						>
 					</div>
 				</div>

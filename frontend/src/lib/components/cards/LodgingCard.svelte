@@ -7,8 +7,7 @@
 	import { t } from 'svelte-i18n';
 	import DeleteWarning from '../DeleteWarning.svelte';
 	import { LODGING_TYPES_ICONS } from '$lib';
-	import { formatDateInTimezone } from '$lib/dateUtils';
-	import { formatAllDayDate } from '$lib/dateUtils';
+	import { formatDateInTimezone, formatAllDayDate, DEFAULT_TIMEZONE } from '$lib/dateUtils';
 	import { isAllDay } from '$lib';
 	import { DEFAULT_CURRENCY, formatMoney, toMoneyValue } from '$lib/money';
 	import CardCarousel from '../CardCarousel.svelte';
@@ -69,7 +68,7 @@
 		return stars;
 	}
 
-	const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC';
+	const localTimeZone = DEFAULT_TIMEZONE ?? 'UTC';
 	const getTimezoneLabel = (zone?: string | null) => zone ?? localTimeZone;
 	const getTimezoneTip = (zone?: string | null) => {
 		const label = getTimezoneLabel(zone);

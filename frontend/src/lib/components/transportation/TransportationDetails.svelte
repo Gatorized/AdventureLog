@@ -6,7 +6,8 @@
 		updateUTCDate,
 		validateDateRange,
 		toDateOnlyLocal,
-		toTimedLocalDefault
+		toTimedLocalDefault,
+		DEFAULT_TIMEZONE
 	} from '$lib/dateUtils';
 	import type { Collection, Lodging, Transportation, MoneyValue } from '$lib/types';
 	import LocationSearchMap from '../shared/LocationSearchMap.svelte';
@@ -76,7 +77,7 @@
 		price: null,
 		price_currency: DEFAULT_CURRENCY
 	};
-	const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const browserTimezone = DEFAULT_TIMEZONE;
 	let selectedStartTimezone: string = browserTimezone;
 	let selectedEndTimezone: string = browserTimezone;
 	let localStartDate: string = '';
