@@ -29,7 +29,7 @@
 	import CashMultiple from '~icons/mdi/cash-multiple';
 	import CardAccountDetails from '~icons/mdi/card-account-details';
 	import CardCarousel from '#lib/components/CardCarousel.svelte';
-	import { formatDateInTimezone, formatAllDayDate } from '#lib/dateUtils.js';
+	import { formatDateInTimezone, formatAllDayDate, DEFAULT_TIMEZONE } from '#lib/dateUtils.js';
 	import { dateFormatFromUser } from '#lib/dateFormat.js';
 	import LodgingModal from '#lib/components/lodging/LodgingModal.svelte';
 	import { DEFAULT_CURRENCY, formatMoney, toMoneyValue } from '#lib/money.js';
@@ -112,7 +112,7 @@
 		return stars;
 	}
 
-	const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC';
+	const localTimeZone = DEFAULT_TIMEZONE;
 	const getTimezoneLabel = (zone?: string | null) => zone ?? localTimeZone;
 	const getTimezoneTip = (zone?: string | null) => {
 		const label = getTimezoneLabel(zone);

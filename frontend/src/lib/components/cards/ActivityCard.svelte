@@ -11,7 +11,7 @@
 	import ClockIcon from '~icons/mdi/clock';
 	import CaloriesIcon from '~icons/mdi/fire';
 	import LocationIcon from '~icons/mdi/map-marker';
-	import { formatDateInTimezone } from '#lib/dateUtils.js';
+	import { formatDateInTimezone, DEFAULT_TIMEZONE } from '#lib/dateUtils.js';
 	import { dateFormatFromUser } from '#lib/dateFormat.js';
 	import { getDistance, getElevation } from '#lib';
 	import { page } from '$app/state';
@@ -216,7 +216,7 @@
 				<div>
 					Started: {formatDateInTimezone(
 						activity.start_date,
-						activity.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+						activity.timezone || DEFAULT_TIMEZONE,
 						dateFormat
 					)}
 				</div>

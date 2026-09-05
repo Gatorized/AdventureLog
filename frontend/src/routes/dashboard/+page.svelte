@@ -30,6 +30,7 @@
 	import EmailAlert from '~icons/mdi/email-alert';
 	import ChevronRight from '~icons/mdi/chevron-right';
 	import CompassRose from '~icons/mdi/compass-rose';
+	import { DEFAULT_TIMEZONE } from '#lib/dateUtils.js';
 
 	interface Props {
 		data: PageData;
@@ -55,7 +56,7 @@
 		});
 	});
 
-	const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const userTimezone = DEFAULT_TIMEZONE;
 	let measurementSystem = $derived(user?.measurement_system || 'metric');
 	let greetingName = $derived(user?.first_name || user?.username || '');
 

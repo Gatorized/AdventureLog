@@ -8,7 +8,8 @@
 		updateUTCDate,
 		validateDateRange,
 		toDateOnlyLocal,
-		toTimedLocalDefault
+		toTimedLocalDefault,
+		DEFAULT_TIMEZONE
 	} from '#lib/dateUtils.js';
 	import type { Collection, Lodging, Transportation, MoneyValue } from '#lib/types.js';
 	import LocationSearchMap from '../shared/LocationSearchMap.svelte';
@@ -91,7 +92,7 @@
 
 	let collectionId = $derived(collection?.id);
 
-	const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const browserTimezone = DEFAULT_TIMEZONE;
 	let selectedStartTimezone: string = $state(browserTimezone);
 	let selectedEndTimezone: string = $state(browserTimezone);
 	let localStartDate: string = $state('');

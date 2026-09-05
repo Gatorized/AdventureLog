@@ -45,6 +45,7 @@
 	import TransportationModal from '#lib/components/transportation/TransportationModal.svelte';
 	import LocationModal from '#lib/components/locations/LocationModal.svelte';
 	import UserAvatar from '#lib/components/UserAvatar.svelte';
+	import { DEFAULT_TIMEZONE } from '#lib/dateUtils.js';
 
 	const renderMarkdown = (markdown: string) => {
 		return marked(markdown) as string;
@@ -231,7 +232,7 @@
 	let timezoneMode: CalendarTimezoneMode = $state('event');
 	let selectedCalendarEvent: CalendarDisplayEvent | null = $state(null);
 
-	const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const userTimezone = DEFAULT_TIMEZONE;
 	const numberLocale = Intl.DateTimeFormat().resolvedOptions().locale;
 
 	type CostCategory = 'lodging' | 'transportation' | 'location';

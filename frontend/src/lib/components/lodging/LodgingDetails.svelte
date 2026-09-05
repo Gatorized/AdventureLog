@@ -8,7 +8,8 @@
 		updateUTCDate,
 		validateDateRange,
 		toDateOnlyLocal,
-		toTimedLocalDefault
+		toTimedLocalDefault,
+		DEFAULT_TIMEZONE
 	} from '#lib/dateUtils.js';
 	import type { Collection, Lodging, MoneyValue } from '#lib/types.js';
 	import LocationSearchMap from '../shared/LocationSearchMap.svelte';
@@ -102,7 +103,7 @@
 
 	let collectionId = $derived(collection?.id);
 
-	let selectedTimezone: string = $state(Intl.DateTimeFormat().resolvedOptions().timeZone);
+	let selectedTimezone: string = $state(DEFAULT_TIMEZONE);
 	let localStartDate: string = $state('');
 	let localEndDate: string = $state('');
 	let allDay: boolean = $state(true);

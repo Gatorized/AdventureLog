@@ -9,7 +9,7 @@
 	import { t } from 'svelte-i18n';
 	import DeleteWarning from '../DeleteWarning.svelte';
 	import { LODGING_TYPES_ICONS } from '#lib';
-	import { formatDateInTimezone } from '#lib/dateUtils.js';
+	import { formatDateInTimezone, DEFAULT_TIMEZONE } from '#lib/dateUtils.js';
 	import { formatAllDayDate } from '#lib/dateUtils.js';
 	import { dateFormatFromUser } from '#lib/dateFormat.js';
 	import { isAllDay } from '#lib';
@@ -74,7 +74,7 @@
 		return stars;
 	}
 
-	const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC';
+	const localTimeZone = DEFAULT_TIMEZONE;
 	const getTimezoneLabel = (zone?: string | null) => zone ?? localTimeZone;
 	const getTimezoneTip = (zone?: string | null) => {
 		const label = getTimezoneLabel(zone);

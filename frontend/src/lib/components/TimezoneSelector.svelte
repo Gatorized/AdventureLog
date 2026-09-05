@@ -3,8 +3,9 @@
 	import type { Attachment } from 'svelte/attachments';
 	import EarthIcon from '~icons/mdi/earth';
 	import { attachPopoverFlip } from '#lib/utils/flipDropdown.js';
+	import { DEFAULT_TIMEZONE } from '#lib/dateUtils.js';
 
-	const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const browserTimezone = DEFAULT_TIMEZONE;
 
 	interface Props {
 		selectedTimezone?: string;

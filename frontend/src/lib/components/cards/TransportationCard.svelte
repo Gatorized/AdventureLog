@@ -9,7 +9,7 @@
 	import { t } from 'svelte-i18n';
 	import DeleteWarning from '../DeleteWarning.svelte';
 	import { TRANSPORTATION_TYPES_ICONS } from '#lib';
-	import { formatAllDayDate, formatDateInTimezone } from '#lib/dateUtils.js';
+	import { formatAllDayDate, formatDateInTimezone, DEFAULT_TIMEZONE } from '#lib/dateUtils.js';
 	import { dateFormatFromUser } from '#lib/dateFormat.js';
 	import { isAllDay } from '#lib';
 	import { DEFAULT_CURRENCY, formatMoney, toMoneyValue } from '#lib/money.js';
@@ -74,7 +74,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	const localTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC';
+	const localTimeZone = DEFAULT_TIMEZONE;
 
 	const getTimezoneLabel = (zone?: string | null) => zone ?? localTimeZone;
 	const getTimezoneTip = (zone?: string | null) => {

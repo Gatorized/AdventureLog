@@ -19,7 +19,8 @@
 		toDateOnlyLocal,
 		toTimedLocalDefault,
 		formatDateInTimezone,
-		formatAllDayDate
+		formatAllDayDate,
+		DEFAULT_TIMEZONE
 	} from '#lib/dateUtils.js';
 	import { dateFormatFromUser } from '#lib/dateFormat.js';
 	import { page } from '$app/state';
@@ -66,7 +67,7 @@
 
 	let {
 		collection = null,
-		selectedStartTimezone = $bindable(Intl.DateTimeFormat().resolvedOptions().timeZone),
+		selectedStartTimezone = $bindable(DEFAULT_TIMEZONE),
 		utcStartDate = $bindable(null),
 		utcEndDate = $bindable(null),
 		note = $bindable(null),
@@ -952,10 +953,10 @@
 		}).localDate;
 
 		if (!selectedStartTimezone) {
-			selectedStartTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+			selectedStartTimezone = DEFAULT_TIMEZONE;
 		}
 		if (!selectedStartTimezone) {
-			selectedStartTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+			selectedStartTimezone = DEFAULT_TIMEZONE;
 		}
 
 		// Check if Strava is enabled by making a simple API call

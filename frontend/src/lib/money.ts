@@ -1,6 +1,6 @@
 import type { MoneyValue } from './types';
 
-export const DEFAULT_CURRENCY = 'USD';
+export const DEFAULT_CURRENCY = 'CAD';
 
 export const CURRENCY_METADATA: { code: string; label: string }[] = [
 	{ code: 'USD', label: 'US Dollar' },

@@ -32,6 +32,7 @@
 		formatCalendarRange
 	} from '#lib/calendar/events.js';
 	import { dateFormatFromUser } from '#lib/dateFormat.js';
+	import { DEFAULT_TIMEZONE } from '#lib/dateUtils.js';
 
 	interface Props {
 		data: PageData;
@@ -39,7 +40,7 @@
 
 	let { data }: Props = $props();
 
-	const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	const userTimezone = DEFAULT_TIMEZONE;
 	const dateFormat = $derived(dateFormatFromUser(data.user));
 
 	let apiEvents: CalendarApiEvent[] = $state<CalendarApiEvent[]>([]);
