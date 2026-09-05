@@ -11,7 +11,6 @@
 
 	let { data } = $props();
 
-	let quote: { quote: string; author: string } = $derived(data.props.quote);
 	let background: Background = $derived(data.props.background);
 	let is_disabled = $derived(data.props.is_disabled as boolean);
 	let is_disabled_message = $derived(data.props.is_disabled_message as string);
@@ -55,10 +54,10 @@
 	{/if}
 
 	<div class="main-container relative z-10 min-h-screen flex items-center justify-center p-4">
-		<div class="w-full max-w-5xl">
+		<div class="w-full max-w-md">
 			<div class="card bg-base-100 shadow-2xl">
 				<div class="card-body p-0">
-					<div class="grid lg:grid-cols-2 min-h-[600px]">
+					<div class="grid min-h-[600px]">
 						<div class="p-8 lg:p-12 flex flex-col justify-center">
 							{#if !is_disabled}
 								<div class="text-center mb-8">
@@ -309,24 +308,6 @@
 									<div class="mt-8"><a href="/login" class="btn btn-primary">Go to Login</a></div>
 								</div>
 							{/if}
-						</div>
-
-						<div
-							class="bg-primary/5 p-8 lg:p-12 flex items-center justify-center border-l border-base-300"
-						>
-							<div class="text-center max-w-md">
-								{#if quote && quote.quote}
-									<div class="space-y-4">
-										<div class="text-6xl text-primary/30 mb-2">"</div>
-										<blockquote class="text-lg font-medium text-base-content leading-relaxed">
-											{quote.quote}
-										</blockquote>
-										<footer class="text-base-content/70 font-medium">
-											— {quote.author}
-										</footer>
-									</div>
-								{/if}
-							</div>
 						</div>
 					</div>
 				</div>
