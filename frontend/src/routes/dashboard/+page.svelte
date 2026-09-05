@@ -14,8 +14,6 @@
 	import Plus from '~icons/mdi/plus';
 	import FlagCheckeredVariantIcon from '~icons/mdi/flag-checkered-variant';
 	import Airplane from '~icons/mdi/airplane';
-	import CityVariantOutline from '~icons/mdi/city-variant-outline';
-	import MapMarkerStarOutline from '~icons/mdi/map-marker-star-outline';
 	import CalendarClock from '~icons/mdi/calendar-clock';
 	import FolderMultiple from '~icons/mdi/folder-multiple';
 	import MapMarkerMultiple from '~icons/mdi/map-marker-multiple';
@@ -97,15 +95,6 @@
 		return record.activity_name || record.sport_type || 'Activity';
 	}
 
-	$: worldExplorationPercentage = stats
-		? getPercentage(stats.visited_country_count, stats.total_countries)
-		: 0;
-	$: regionExplorationPercentage = stats
-		? getPercentage(stats.visited_region_count, stats.total_regions)
-		: 0;
-	$: cityExplorationPercentage = stats
-		? getPercentage(stats.visited_city_count, stats.total_cities)
-		: 0;
 	$: locationVisitedPercentage = stats
 		? getPercentage(stats.visited_location_count, stats.location_count)
 		: 0;
@@ -442,42 +431,6 @@
 
 				<div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
 					<a
-						href="/worldtravel"
-						class="dashboard-stat-card group relative col-span-1 overflow-hidden rounded-2xl border border-success/20 bg-base-100/80 p-5 shadow-sm md:col-span-2 xl:row-span-2"
-					>
-						<div class="relative flex h-full flex-col justify-between gap-6">
-							<div class="flex items-start justify-between gap-4">
-								<div>
-									<div class="text-xs font-semibold uppercase tracking-widest text-success/70">
-										{$t('profile.visited_countries')}
-									</div>
-									<div class="mt-2 text-5xl font-black text-success">
-										{stats.visited_country_count}
-									</div>
-									<div class="mt-1 text-sm text-success/70">
-										{stats.visited_country_count}/{stats.total_countries}
-										{$t('home.of_world').toLowerCase()}
-									</div>
-								</div>
-								<div class="rounded-2xl bg-success/15 p-4">
-									<Earth class="h-10 w-10 text-success" />
-								</div>
-							</div>
-							<div>
-								<div class="mb-2 flex items-end justify-between">
-									<span class="text-3xl font-bold text-success">{worldExplorationPercentage}%</span>
-									<span class="text-xs text-base-content/50">{$t('home.of_world')}</span>
-								</div>
-								<progress
-									class="progress progress-success h-3 w-full"
-									value={stats.visited_country_count}
-									max={Math.max(stats.total_countries, 1)}
-								></progress>
-							</div>
-						</div>
-					</a>
-
-					<a
 						href="/locations"
 						class="dashboard-stat-card group rounded-2xl border border-primary/15 bg-base-100/80 p-4 shadow-sm"
 					>
@@ -520,52 +473,6 @@
 							</div>
 							<div class="rounded-xl bg-secondary/15 p-3">
 								<FolderMultiple class="h-7 w-7 text-secondary" />
-							</div>
-						</div>
-					</a>
-
-					<a
-						href="/worldtravel"
-						class="dashboard-stat-card group rounded-2xl border border-info/15 bg-base-100/80 p-4 shadow-sm"
-					>
-						<div class="flex items-center justify-between gap-3">
-							<div class="min-w-0 flex-1">
-								<div class="text-xs font-semibold uppercase tracking-wide text-info/70">
-									{$t('profile.visited_regions')}
-								</div>
-								<div class="mt-1 text-3xl font-bold text-info">{stats.visited_region_count}</div>
-								<progress
-									class="progress progress-info mt-3 h-1.5 w-full"
-									value={stats.visited_region_count}
-									max={Math.max(stats.total_regions, 1)}
-								></progress>
-								<div class="mt-1 text-xs text-info/60">{regionExplorationPercentage}%</div>
-							</div>
-							<div class="rounded-xl bg-info/15 p-3">
-								<MapMarkerStarOutline class="h-7 w-7 text-info" />
-							</div>
-						</div>
-					</a>
-
-					<a
-						href="/worldtravel"
-						class="dashboard-stat-card group rounded-2xl border border-warning/15 bg-base-100/80 p-4 shadow-sm"
-					>
-						<div class="flex items-center justify-between gap-3">
-							<div class="min-w-0 flex-1">
-								<div class="text-xs font-semibold uppercase tracking-wide text-warning/70">
-									{$t('profile.visited_cities')}
-								</div>
-								<div class="mt-1 text-3xl font-bold text-warning">{stats.visited_city_count}</div>
-								<progress
-									class="progress progress-warning mt-3 h-1.5 w-full"
-									value={stats.visited_city_count}
-									max={Math.max(stats.total_cities, 1)}
-								></progress>
-								<div class="mt-1 text-xs text-warning/60">{cityExplorationPercentage}%</div>
-							</div>
-							<div class="rounded-xl bg-warning/15 p-3">
-								<CityVariantOutline class="h-7 w-7 text-warning" />
 							</div>
 						</div>
 					</a>
