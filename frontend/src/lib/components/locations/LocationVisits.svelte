@@ -93,6 +93,7 @@
 	let constrainDates: boolean = $state(false);
 	let isEditing = $state(false);
 	let visitIdEditing: string | null = $state(null);
+	let distanceKm: number | null = $state(null);
 
 	// Activity management state
 	let stravaEnabled: boolean = $state(false);
@@ -352,7 +353,8 @@
 						start_date: utcStartDate,
 						end_date: utcEndDate,
 						notes: note,
-						timezone: selectedStartTimezone
+						timezone: selectedStartTimezone,
+						distance_km: distanceKm
 					})
 				});
 
@@ -386,7 +388,8 @@
 						end_date: utcEndDate,
 						notes: note,
 						timezone: selectedStartTimezone,
-						location: objectId
+						location: objectId,
+						distance_km: distanceKm
 					})
 				});
 
@@ -411,6 +414,7 @@
 				localEndDate = '';
 				utcStartDate = null;
 				utcEndDate = null;
+				distanceKm = null;
 			}
 			return true;
 		} finally {
@@ -887,6 +891,7 @@
 		constrainDates = Boolean(collection?.start_date && collection?.end_date);
 		utcStartDate = visit.start_date;
 		utcEndDate = visit.end_date;
+		distanceKm = visit.distance_km ?? null;
 
 		setTimeout(() => {
 			isEditing = false;
@@ -1092,6 +1097,22 @@
 						{#if !allDay}
 							<TimezoneSelector bind:selectedTimezone={selectedStartTimezone} />
 						{/if}
+					</div>
+
+					<div>
+						<label class="field-label" for="visit-distance-km"
+							>{$t('adventures.visit_distance_traveled')}</label
+						>
+						<input
+							id="visit-distance-km"
+							type="number"
+							min="0"
+							step="0.1"
+							class="input input-bordered w-full mt-1 bg-base-100/80 focus:bg-base-100"
+							bind:value={distanceKm}
+							placeholder={$t('adventures.visit_distance_traveled_placeholder')}
+						/>
+						<p class="text-xs opacity-70 mt-1">{$t('adventures.visit_distance_traveled_hint')}</p>
 					</div>
 
 					<div>
