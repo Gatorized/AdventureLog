@@ -18,16 +18,18 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): nu
 	return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+export type HomeLocation = { latitude: number; longitude: number } | null | undefined;
+
 /**
  * One row per visit across all of a collection's locations, sorted by start
  * date (undated visits sort last, by location name), with a distance
- * traveled per stay: a user-entered override wins; otherwise it's
- * approximated from the previous stay's coordinates, but only when the
- * visit is explicitly marked `linked_to_previous` (same trip, no return
- * home in between) — an unlinked visit is assumed to be its own round trip
- * from home and gets no automatic estimate.
+ * traveled per stay: a user-entered override wins; otherwise, if the visit
+ * is explicitly marked `linked_to_previous` (same trip, no return home in
+ * between), it's approximated from the previous stay's coordinates; failing
+ * that (including for a normal, unlinked visit) it falls back to the
+ * straight-line distance from the user's home location when that's set.
  */
-export function buildStayRows(locations: Location[]): StayRow[] {
+export function buildStayRows(locations: Location[], home?: HomeLocation): StayRow[] {
 	const sortedStays = (locations || [])
 		.flatMap((location) => (location.visits || []).map((visit) => ({ location, visit })))
 		.sort((a, b) => {
@@ -44,21 +46,22 @@ export function buildStayRows(locations: Location[]): StayRow[] {
 			return { location, visit, distanceKm: visit.distance_km, isEstimate: false };
 		}
 
-		const previous = visit.linked_to_previous ? sortedStays[index - 1]?.location : null;
-		if (
-			previous &&
-			previous.latitude != null &&
-			previous.longitude != null &&
-			location.latitude != null &&
-			location.longitude != null
-		) {
-			const km = haversineKm(
-				previous.latitude,
-				previous.longitude,
-				location.latitude,
-				location.longitude
-			);
-			return { location, visit, distanceKm: km, isEstimate: true };
+		if (location.latitude != null && location.longitude != null) {
+			const previous = visit.linked_to_previous ? sortedStays[index - 1]?.location : null;
+			if (previous && previous.latitude != null && previous.longitude != null) {
+				const km = haversineKm(
+					previous.latitude,
+					previous.longitude,
+					location.latitude,
+					location.longitude
+				);
+				return { location, visit, distanceKm: km, isEstimate: true };
+			}
+
+			if (home) {
+				const km = haversineKm(home.latitude, home.longitude, location.latitude, location.longitude);
+				return { location, visit, distanceKm: km, isEstimate: true };
+			}
 		}
 
 		return { location, visit, distanceKm: null, isEstimate: false };

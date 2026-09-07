@@ -9,8 +9,9 @@
 		normalizeDateFormat,
 		type DateFormatPreference
 	} from '#lib/dateFormat.js';
-	import { getBasemapOptions } from '#lib';
+	import { getBasemapOptions, normalizeBasemapType } from '#lib';
 	import type { User } from '#lib/types.js';
+	import LocationSearchMap from '#lib/components/shared/LocationSearchMap.svelte';
 	import SettingsCard from './SettingsCard.svelte';
 	import SettingsSectionHeader from './SettingsSectionHeader.svelte';
 	import SettingsSubsection from './SettingsSubsection.svelte';
@@ -208,6 +209,37 @@
 					{/each}
 				</select>
 				<p class="field-hint">{$t('settings.map_style_desc')}</p>
+			</div>
+			<div class="flex flex-col md:col-span-2">
+				<label class="field-label" for="home_location_search">{$t('settings.home_location')}</label>
+				<p class="field-hint mb-2">{$t('settings.home_location_desc')}</p>
+				<input type="hidden" name="home_latitude" value={user.home_latitude ?? ''} />
+				<input type="hidden" name="home_longitude" value={user.home_longitude ?? ''} />
+				<input type="hidden" name="home_location" value={user.home_location ?? ''} />
+				<LocationSearchMap
+					initialSelection={user.home_latitude != null && user.home_longitude != null
+						? {
+								name: user.home_location || '',
+								lat: user.home_latitude,
+								lng: user.home_longitude,
+								location: user.home_location || ''
+							}
+						: null}
+					bind:displayName={() => user.home_location ?? '', (v) => (user.home_location = v)}
+					basemapType={normalizeBasemapType(user.map_style)}
+					displayNamePosition="after"
+					showDisplayNameInput={false}
+					on:update={(e) => {
+						user.home_latitude = e.detail.lat;
+						user.home_longitude = e.detail.lng;
+						user.home_location = e.detail.location;
+					}}
+					on:clear={() => {
+						user.home_latitude = null;
+						user.home_longitude = null;
+						user.home_location = '';
+					}}
+				/>
 			</div>
 		</div>
 

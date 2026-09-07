@@ -1119,7 +1119,7 @@
 
 				<!-- Stays View -->
 				{#if currentView === 'stays' && collection}
-					<CollectionStays {collection} on:openEdit={handleOpenEdit} />
+					<CollectionStays {collection} user={data.user} on:openEdit={handleOpenEdit} />
 				{/if}
 
 				<!-- Map View -->

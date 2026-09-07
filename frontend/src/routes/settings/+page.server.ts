@@ -152,6 +152,9 @@ export const actions: Actions = {
 			let default_currency = formData.get('default_currency') as string | null | undefined;
 			let date_format = formData.get('date_format') as string | null | undefined;
 			let map_style = formData.get('map_style') as string | null | undefined;
+			let home_latitude = formData.get('home_latitude') as string | null | undefined;
+			let home_longitude = formData.get('home_longitude') as string | null | undefined;
+			let home_location = formData.get('home_location') as string | null | undefined;
 
 			const resCurrent = await djangoSessionFetch(event, '/auth/user-metadata/');
 
@@ -229,6 +232,15 @@ export const actions: Actions = {
 			}
 			if (map_style) {
 				formDataToSend.append('map_style', map_style);
+			}
+			if (home_latitude) {
+				formDataToSend.append('home_latitude', home_latitude);
+			}
+			if (home_longitude) {
+				formDataToSend.append('home_longitude', home_longitude);
+			}
+			if (home_location) {
+				formDataToSend.append('home_location', home_location);
 			}
 
 			let csrfToken = await fetchCSRFToken();

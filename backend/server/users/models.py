@@ -79,6 +79,13 @@ class CustomUser(AbstractUser):
     map_style = models.CharField(max_length=32, choices=BASEMAP_CHOICES, default='default')
     legal_consent = models.JSONField(null=True, blank=True, editable=False)
 
+    # Home base, used to estimate distance traveled for a stay that isn't
+    # explicitly linked to the previous one in a collection's stays timeline
+    # (see adventures.Visit.linked_to_previous).
+    home_latitude = models.FloatField(null=True, blank=True)
+    home_longitude = models.FloatField(null=True, blank=True)
+    home_location = models.CharField(max_length=255, null=True, blank=True)
+
     def save(self, *args, **kwargs):
         if isinstance(self.email, str) and not self.email.strip():
             self.email = None

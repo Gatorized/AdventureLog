@@ -22,6 +22,9 @@ export type User = {
 	default_currency: string;
 	date_format?: string;
 	map_style: string;
+	home_latitude?: number | null;
+	home_longitude?: number | null;
+	home_location?: string | null;
 	shared_collection_count?: number;
 	pending_collection_invite_count?: number;
 	left_shared_collections?: number;
