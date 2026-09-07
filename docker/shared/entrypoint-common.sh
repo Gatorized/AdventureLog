@@ -45,7 +45,11 @@ from allauth.account.models import EmailAddress
 
 User = get_user_model()
 
-if not User.objects.filter(username='$DJANGO_ADMIN_USERNAME').exists():
+# Check by email, not username: username is user-editable from the profile
+# page, so on a renamed account this used to try to INSERT a duplicate and
+# crash-loop the whole container on the email uniqueness constraint instead
+# of the username one it was actually checking.
+if not User.objects.filter(email='$DJANGO_ADMIN_EMAIL').exists():
     superuser = User.objects.create_superuser(
         username='$DJANGO_ADMIN_USERNAME',
         email='$DJANGO_ADMIN_EMAIL',

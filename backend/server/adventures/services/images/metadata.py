@@ -11,7 +11,7 @@ import requests
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.gis.geos import Point
 from django.core.files.base import ContentFile
-from PIL import Image as PILImage
+from PIL import Image as PILImage, ImageOps
 from PIL.ExifTags import GPSTAGS, IFD
 
 from adventures.models import ContentImage
@@ -120,6 +120,56 @@ def extract_gps_from_bytes(content: bytes) -> Point | None:
         return None
 
 
+def normalize_image_orientation(image_file):
+    """
+    Bake the EXIF orientation into the actual pixels and re-save, rather
+    than leaving a viewer to interpret the orientation tag.
+
+    Needed because ResizedImageField (django-resized) re-encodes every
+    upload to WEBP and, before doing so, tries to auto-rotate via a
+    legacy Pillow API (Image._getexif()) that pillow-heif doesn't
+    reliably support — so HEIC photos (the default format on iPhone
+    cameras) silently keep their original sensor-orientation pixels
+    while the orientation tag still gets carried into the output WEBP.
+    WEBP's EXIF-orientation support is far less consistent across
+    browser engines than JPEG's, so the result displays correctly on
+    some viewers and rotated on others — "random", and disproportionately
+    hitting mobile browsers. Pillow's ImageOps.exif_transpose() uses the
+    modern EXIF API (works for HEIC too) and physically rotates the
+    pixels, so every downstream consumer sees the same, correct image
+    regardless of whether it respects EXIF orientation at all.
+
+    Returns a new Django File with corrected pixels, or the original
+    file unchanged if anything about this image can't be processed
+    (unsupported format, no EXIF, corrupt data, etc).
+    """
+    try:
+        image_file.seek(0)
+        original_bytes = image_file.read()
+        with PILImage.open(io.BytesIO(original_bytes)) as img:
+            # exif_transpose() returns a *new* Image object even when the
+            # orientation tag is already 1 (normal) or absent — it's not a
+            # same-object no-op, so checking identity to decide whether a
+            # rotation actually happened is a false positive on every image
+            # that merely *has* EXIF data. Check the tag value directly.
+            orientation = img.getexif().get(0x0112, 1)
+            if orientation in (1, None):
+                return image_file
+
+            transposed = ImageOps.exif_transpose(img)
+            image_format = img.format
+            buffer = io.BytesIO()
+            save_kwargs = {}
+            if image_format in ('JPEG', 'WEBP'):
+                save_kwargs['quality'] = 95
+            transposed.save(buffer, format=image_format, **save_kwargs)
+            return ContentFile(buffer.getvalue(), name=getattr(image_file, 'name', None))
+    except Exception:
+        logger.debug('Failed to normalize image orientation, using original file', exc_info=True)
+        image_file.seek(0)
+        return image_file
+
+
 def fetch_immich_coordinates(integration, immich_id: str) -> Point | None:
     if not integration or not immich_id:
         return None
@@ -212,7 +262,7 @@ def create_content_image(
     if immich_id:
         create_kwargs['immich_id'] = immich_id
     if image_file is not None:
-        create_kwargs['image'] = image_file
+        create_kwargs['image'] = normalize_image_orientation(image_file)
 
     return ContentImage.objects.create(**create_kwargs)
 
