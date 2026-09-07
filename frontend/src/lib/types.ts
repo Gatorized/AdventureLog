@@ -534,6 +534,7 @@ export type Visit = {
 	created_at: string;
 	updated_at: string;
 	distance_km?: number | null; // User-entered distance traveled to reach this visit (km); null = not set
+	linked_to_previous?: boolean; // If true, this visit continues the previous stay in the timeline (same trip); otherwise treated as its own round trip from home
 };
 
 export type TransportationVisit = {

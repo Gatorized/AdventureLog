@@ -138,8 +138,18 @@ class Visit(models.Model):
     # Manual override for distance traveled to reach this visit (km), e.g.
     # from home for the first stay in a trip, or from the previous stay
     # otherwise. When blank, the frontend estimates it from the visited
-    # locations' coordinates and the previous visit in the stays timeline.
+    # locations' coordinates and the previous visit in the stays timeline,
+    # but only when `linked_to_previous` is set.
     distance_km = models.FloatField(blank=True, null=True)
+
+    # Whether this visit continues directly from the previous visit in the
+    # stays timeline (same trip, no return home in between). Defaults to
+    # False: most visits are treated as their own round trip from home, so
+    # they get no automatic distance estimate unless distance_km is set
+    # explicitly. Set this when a visit is really the next leg of an
+    # ongoing trip, so the frontend can estimate distance from the previous
+    # stay's coordinates.
+    linked_to_previous = models.BooleanField(default=False)
 
     # Generic relations for images and attachments
     images = GenericRelation('ContentImage', related_query_name='visit')

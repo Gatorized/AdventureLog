@@ -465,7 +465,7 @@ class VisitSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Visit
-        fields = ['id', 'start_date', 'end_date', 'timezone', 'notes', 'activities','location', 'created_at', 'updated_at', 'distance_km']
+        fields = ['id', 'start_date', 'end_date', 'timezone', 'notes', 'activities','location', 'created_at', 'updated_at', 'distance_km', 'linked_to_previous']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def validate(self, attrs):
