@@ -19,6 +19,7 @@
 	import { copyrightYear } from '$lib/config.js';
 	import AppVersionDisplay from '$lib/components/shared/AppVersionDisplay.svelte';
 	import IntegrationsSettings from '$lib/components/settings/IntegrationsSettings.svelte';
+	import LocationSearchMap from '$lib/components/shared/LocationSearchMap.svelte';
 
 	export let data;
 	let user: User;
@@ -622,6 +623,42 @@
 										<p class="text-sm text-base-content/60 mt-1">
 											{$t('settings.map_style_desc')}
 										</p>
+									</div>
+
+									<div class="form-control md:col-span-2">
+										<label class="label" for="home_location_search">
+											<span class="label-text font-medium">{$t('settings.home_location')}</span>
+										</label>
+										<p class="text-sm text-base-content/60 mb-2">
+											{$t('settings.home_location_desc')}
+										</p>
+										<input type="hidden" name="home_latitude" value={user.home_latitude ?? ''} />
+										<input type="hidden" name="home_longitude" value={user.home_longitude ?? ''} />
+										<input type="hidden" name="home_location" value={user.home_location ?? ''} />
+										<LocationSearchMap
+											initialSelection={user.home_latitude != null && user.home_longitude != null
+												? {
+														name: user.home_location || '',
+														lat: user.home_latitude,
+														lng: user.home_longitude,
+														location: user.home_location || ''
+													}
+												: null}
+											bind:displayName={user.home_location}
+											basemapType={normalizeBasemapType(user.map_style)}
+											displayNamePosition="after"
+											showDisplayNameInput={false}
+											on:update={(e) => {
+												user.home_latitude = e.detail.lat;
+												user.home_longitude = e.detail.lng;
+												user.home_location = e.detail.location;
+											}}
+											on:clear={() => {
+												user.home_latitude = null;
+												user.home_longitude = null;
+												user.home_location = '';
+											}}
+										/>
 									</div>
 								</div>
 

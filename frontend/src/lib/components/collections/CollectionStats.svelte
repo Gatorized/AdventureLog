@@ -211,10 +211,15 @@
 	$: totalNights = lodgingNights + visitNights;
 	$: totalStaysCount = lodgingStays.length + visitsInRange.length;
 
+	$: home =
+		user?.home_latitude != null && user?.home_longitude != null
+			? { latitude: user.home_latitude, longitude: user.home_longitude }
+			: null;
+
 	// Total distance traveled between stays (manual override or estimate —
 	// see $lib/stays), independent of the transportation-segment distance
 	// tracked below.
-	$: stayDistanceKm = buildStayRows(visitedLocations).reduce(
+	$: stayDistanceKm = buildStayRows(visitedLocations, home).reduce(
 		(sum, row) => sum + (row.distanceKm || 0),
 		0
 	);
@@ -608,9 +613,17 @@
 			</h3>
 			<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
 				<div class="stat bg-primary/10 rounded-lg p-4">
-					<div class="stat-title text-xs">{$t('adventures.total_days')}</div>
+					<div class="stat-title text-xs">
+						{tripStart && tripEnd
+							? $t('adventures.total_days')
+							: $t('adventures.collection_span')}
+					</div>
 					<div class="stat-value text-primary text-2xl">{tripDurationDays ?? 'N/A'}</div>
-					<div class="stat-desc">{$t('adventures.trip_window')}</div>
+					<div class="stat-desc">
+						{tripStart && tripEnd
+							? $t('adventures.trip_window')
+							: $t('adventures.collection_span_desc')}
+					</div>
 				</div>
 				<div class="stat bg-success/10 rounded-lg p-4">
 					<div class="stat-title text-xs">{$t('adventures.active_days')}</div>

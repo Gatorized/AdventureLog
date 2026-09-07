@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Collection, Location } from '$lib/types';
+	import type { Collection, Location, User } from '$lib/types';
 	import { createEventDispatcher } from 'svelte';
 	import { t } from 'svelte-i18n';
 	import Bed from '~icons/mdi/bed';
@@ -10,16 +10,22 @@
 	const dispatch = createEventDispatcher();
 
 	export let collection: Collection;
+	export let user: User | null = null;
 
 	function formatDateOnly(dateString: string | null): string {
 		if (!dateString) return '';
 		return dateString.split('T')[0];
 	}
 
+	$: home =
+		user?.home_latitude != null && user?.home_longitude != null
+			? { latitude: user.home_latitude, longitude: user.home_longitude }
+			: null;
+
 	// One row per visit (a location visited more than once yields multiple
 	// rows), sorted by start date. See $lib/stays for how the distance is
 	// derived.
-	$: stayRows = buildStayRows((collection?.locations || []) as Location[]);
+	$: stayRows = buildStayRows((collection?.locations || []) as Location[], home);
 
 	function editStay(location: Location) {
 		dispatch('openEdit', { type: 'locations', item: location });

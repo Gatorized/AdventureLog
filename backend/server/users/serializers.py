@@ -72,6 +72,12 @@ class UserDetailsSerializer(serializers.ModelSerializer):
             extra_fields.append('default_currency')
         if hasattr(UserModel, 'map_style'):
             extra_fields.append('map_style')
+        if hasattr(UserModel, 'home_latitude'):
+            extra_fields.append('home_latitude')
+        if hasattr(UserModel, 'home_longitude'):
+            extra_fields.append('home_longitude')
+        if hasattr(UserModel, 'home_location'):
+            extra_fields.append('home_location')
 
         fields = ['pk', *extra_fields]
         read_only_fields = ('email', 'date_joined', 'is_staff', 'is_superuser', 'is_active', 'pk', 'disable_password')

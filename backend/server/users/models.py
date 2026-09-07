@@ -67,7 +67,14 @@ class CustomUser(AbstractUser):
     measurement_system = models.CharField(max_length=10, choices=[('metric', 'Metric'), ('imperial', 'Imperial')], default='metric')
     default_currency = models.CharField(max_length=5, choices=CURRENCY_CHOICES, default='CAD')
     map_style = models.CharField(max_length=32, choices=BASEMAP_CHOICES, default='default')
-    
+
+    # Home base, used to estimate distance traveled for a stay that isn't
+    # explicitly linked to the previous one in a collection's stays timeline
+    # (see adventures.Visit.linked_to_previous).
+    home_latitude = models.FloatField(null=True, blank=True)
+    home_longitude = models.FloatField(null=True, blank=True)
+    home_location = models.CharField(max_length=255, null=True, blank=True)
+
     
     def __str__(self):
         return self.username
