@@ -15,6 +15,7 @@
 	// lodging icons and helpers
 	import { LODGING_TYPES_ICONS, getActivityIcon, SPORT_TYPE_CHOICES } from '#lib';
 	import { dateFormatFromUser, formatDisplayDate } from '#lib/dateFormat.js';
+	import { buildStayRows } from '#lib/stays.js';
 
 	interface Props {
 		collection: Collection;
@@ -103,8 +104,44 @@
 		}
 	}
 
+	// Collections without explicit start/end dates ("folder view") have no
+	// tripStart/tripEnd — fall back to the span between the earliest and
+	// latest visit/lodging dates so Total Days isn't just N/A.
+	let derivedTripSpan = $derived.by(() => {
+		if (tripStart && tripEnd) return null;
+
+		let earliest: DateTime | null = null;
+		let latest: DateTime | null = null;
+		const consider = (dateStr: string | null | undefined) => {
+			if (!dateStr) return;
+			const d = DateTime.fromISO(dateStr);
+			if (!d.isValid) return;
+			if (!earliest || d < earliest) earliest = d;
+			if (!latest || d > latest) latest = d;
+		};
+
+		(collection.locations || []).forEach((loc) =>
+			(loc.visits || []).forEach((visit) => {
+				consider(visit.start_date);
+				consider(visit.end_date || visit.start_date);
+			})
+		);
+		(collection.lodging || []).forEach((stay) => {
+			consider(stay.check_in);
+			consider(stay.check_out || stay.check_in);
+		});
+
+		if (!earliest || !latest) return null;
+		return { start: earliest as DateTime, end: latest as DateTime };
+	});
+
+	let effectiveTripStart = $derived(tripStart || derivedTripSpan?.start || null);
+	let effectiveTripEnd = $derived(tripEnd || derivedTripSpan?.end || null);
+
 	let tripDurationDays = $derived(
-		tripStart && tripEnd ? Math.max(1, Math.floor(tripEnd.diff(tripStart, 'days').days) + 1) : null
+		effectiveTripStart && effectiveTripEnd
+			? Math.max(1, Math.floor(effectiveTripEnd.diff(effectiveTripStart, 'days').days) + 1)
+			: null
 	);
 
 	let visitedLocations = $derived(
@@ -172,6 +209,36 @@
 
 			return sum + diff;
 		}, 0)
+	);
+
+	// Most of this family's stays are tracked as location Visits rather than
+	// Lodging bookings, so nights need to count both.
+	let visitNights = $derived(
+		visitsInRange.reduce((sum: number, visit: Visit) => {
+			if (!visit.start_date || !visit.end_date) return sum;
+			const start = DateTime.fromISO(visit.start_date);
+			const end = DateTime.fromISO(visit.end_date);
+			if (!start.isValid || !end.isValid) return sum;
+
+			const startDay = start.startOf('day');
+			const endDay = end.startOf('day');
+			let diff = endDay.diff(startDay, 'days').days;
+
+			if (!Number.isFinite(diff)) return sum;
+			if (diff <= 0) diff = 1;
+
+			return sum + diff;
+		}, 0)
+	);
+
+	let totalNights = $derived(lodgingNights + visitNights);
+	let totalStaysCount = $derived(lodgingStays.length + visitsInRange.length);
+
+	// Total distance traveled between stays (manual override or estimate —
+	// see $lib/stays), independent of the transportation-segment distance
+	// tracked below.
+	let stayDistanceKm = $derived(
+		buildStayRows(visitedLocations).reduce((sum, row) => sum + (row.distanceKm || 0), 0)
 	);
 
 	let notesInRange = $derived(
@@ -591,7 +658,7 @@
 				<span class="text-2xl">📆</span>
 				{$t('adventures.trip_timeline')}
 			</h3>
-			<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+			<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
 				<div class="stat bg-primary/10 rounded-lg p-4">
 					<div class="stat-title text-xs">{$t('adventures.total_days')}</div>
 					<div class="stat-value text-primary text-2xl">{tripDurationDays ?? 'N/A'}</div>
@@ -609,8 +676,15 @@
 				</div>
 				<div class="stat bg-warning/10 rounded-lg p-4">
 					<div class="stat-title text-xs">{$t('adventures.nights')}</div>
-					<div class="stat-value text-warning text-2xl">{lodgingNights}</div>
-					<div class="stat-desc">{lodgingStays.length} {$t('adventures.stays')}</div>
+					<div class="stat-value text-warning text-2xl">{totalNights}</div>
+					<div class="stat-desc">{totalStaysCount} {$t('adventures.stays')}</div>
+				</div>
+				<div class="stat bg-secondary/10 rounded-lg p-4">
+					<div class="stat-title text-xs">{$t('adventures.distance_traveled')}</div>
+					<div class="stat-value text-secondary text-2xl">
+						{numberFormatter.format(convertDistance(stayDistanceKm))}
+					</div>
+					<div class="stat-desc">{getDistanceUnit()} {$t('adventures.traveled')}</div>
 				</div>
 			</div>
 		</div>

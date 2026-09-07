@@ -94,6 +94,7 @@
 	let isEditing = $state(false);
 	let visitIdEditing: string | null = $state(null);
 	let distanceKm: number | null = $state(null);
+	let linkedToPrevious: boolean = $state(false);
 
 	// Activity management state
 	let stravaEnabled: boolean = $state(false);
@@ -354,7 +355,8 @@
 						end_date: utcEndDate,
 						notes: note,
 						timezone: selectedStartTimezone,
-						distance_km: distanceKm
+						distance_km: distanceKm,
+						linked_to_previous: linkedToPrevious
 					})
 				});
 
@@ -389,7 +391,8 @@
 						notes: note,
 						timezone: selectedStartTimezone,
 						location: objectId,
-						distance_km: distanceKm
+						distance_km: distanceKm,
+						linked_to_previous: linkedToPrevious
 					})
 				});
 
@@ -415,6 +418,7 @@
 				utcStartDate = null;
 				utcEndDate = null;
 				distanceKm = null;
+				linkedToPrevious = false;
 			}
 			return true;
 		} finally {
@@ -892,6 +896,7 @@
 		utcStartDate = visit.start_date;
 		utcEndDate = visit.end_date;
 		distanceKm = visit.distance_km ?? null;
+		linkedToPrevious = visit.linked_to_previous ?? false;
 
 		setTimeout(() => {
 			isEditing = false;
@@ -1100,7 +1105,20 @@
 					</div>
 
 					<div>
-						<label class="field-label" for="visit-distance-km"
+						<div class="flex items-center gap-3">
+							<input
+								id="visit-linked-to-previous"
+								type="checkbox"
+								class="toggle toggle-sm"
+								bind:checked={linkedToPrevious}
+							/>
+							<label class="field-label" for="visit-linked-to-previous"
+								>{$t('adventures.visit_linked_to_previous')}</label
+							>
+						</div>
+						<p class="text-xs opacity-70 mt-1">{$t('adventures.visit_linked_to_previous_hint')}</p>
+
+						<label class="field-label mt-3 block" for="visit-distance-km"
 							>{$t('adventures.visit_distance_traveled')}</label
 						>
 						<input
