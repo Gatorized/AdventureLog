@@ -533,6 +533,7 @@ export type Visit = {
 	location: string;
 	created_at: string;
 	updated_at: string;
+	distance_km?: number | null; // User-entered distance traveled to reach this visit (km); null = not set
 };
 
 export type TransportationVisit = {

@@ -465,7 +465,7 @@ class VisitSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Visit
-        fields = ['id', 'start_date', 'end_date', 'timezone', 'notes', 'activities','location', 'created_at', 'updated_at']
+        fields = ['id', 'start_date', 'end_date', 'timezone', 'notes', 'activities','location', 'created_at', 'updated_at', 'distance_km']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
     def validate(self, attrs):
@@ -854,7 +854,7 @@ class LodgingSerializer(CoordinateSerializerMixin, CustomModelSerializer):
     class Meta:
         model = Lodging
         fields = [
-            'id', 'user', 'name', 'description', 'rating', 'link', 'check_in', 'check_out', 
+            'id', 'user', 'name', 'description', 'rating', 'link', 'check_in', 'check_out',
             'reservation_number', 'price', 'price_currency', 'latitude', 'longitude', 'location', 'is_public',
             'collection', 'created_at', 'updated_at', 'type', 'timezone', 'images', 'attachments'
         ]

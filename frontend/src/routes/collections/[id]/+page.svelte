@@ -22,6 +22,7 @@
 	import CollectionRecommendationView from '$lib/components/CollectionRecommendationView.svelte';
 	import CollectionMap from '$lib/components/collections/CollectionMap.svelte';
 	import CollectionStats from '$lib/components/collections/CollectionStats.svelte';
+	import CollectionStays from '$lib/components/collections/CollectionStays.svelte';
 	import LocationLink from '$lib/components/LocationLink.svelte';
 	import { getBasemapUrl } from '$lib';
 	import { formatMoney, toMoneyValue, DEFAULT_CURRENCY } from '$lib/money';
@@ -31,6 +32,7 @@
 	import Map from '~icons/mdi/map';
 	import Lightbulb from '~icons/mdi/lightbulb';
 	import ChartBar from '~icons/mdi/chart-bar';
+	import Bed from '~icons/mdi/bed';
 	import Plus from '~icons/mdi/plus';
 	import FilePdfBox from '~icons/mdi/file-pdf-box';
 	import ImageOutline from '~icons/mdi/image-outline';
@@ -180,7 +182,7 @@
 	}
 
 	// View state from URL params
-	type ViewType = 'all' | 'itinerary' | 'map' | 'calendar' | 'recommendations' | 'stats';
+	type ViewType = 'all' | 'itinerary' | 'map' | 'calendar' | 'recommendations' | 'stats' | 'stays';
 	let currentView: ViewType = 'itinerary';
 
 	// Determine if this is a folder view (no dates) or itinerary view (has dates)
@@ -244,7 +246,8 @@
 			false,
 		calendar: !isFolderView,
 		recommendations: canModifyCollection,
-		stats: true
+		stats: true,
+		stays: (collection?.locations || []).some((l) => (l.visits?.length ?? 0) > 0)
 	};
 
 	// Get default view based on available views
@@ -256,7 +259,9 @@
 		const view = $page.url.searchParams.get('view') as ViewType;
 		if (
 			view &&
-			['all', 'itinerary', 'map', 'calendar', 'recommendations', 'stats'].includes(view) &&
+			['all', 'itinerary', 'map', 'calendar', 'recommendations', 'stats', 'stays'].includes(
+				view
+			) &&
 			availableViews[view]
 		) {
 			currentView = view;
@@ -1005,6 +1010,16 @@
 						<span class="hidden sm:inline">{$t('collections.statistics')}</span>
 					</button>
 				{/if}
+				{#if availableViews.stays}
+					<button
+						class="btn join-item"
+						class:btn-active={currentView === 'stays'}
+						on:click={() => switchView('stays')}
+					>
+						<Bed class="w-5 h-5 sm:mr-2" aria-hidden="true" />
+						<span class="hidden sm:inline">{$t('adventures.stays_timeline')}</span>
+					</button>
+				{/if}
 			</div>
 			{#if canExportCollection}
 				<div class="flex flex-wrap gap-2">
@@ -1065,6 +1080,11 @@
 				<!-- Stats View -->
 				{#if currentView === 'stats'}
 					<CollectionStats {collection} user={data.user} />
+				{/if}
+
+				<!-- Stays View -->
+				{#if currentView === 'stays' && collection}
+					<CollectionStays {collection} on:openEdit={handleOpenEdit} />
 				{/if}
 
 				<!-- Map View -->

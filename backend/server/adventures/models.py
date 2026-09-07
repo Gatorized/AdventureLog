@@ -135,6 +135,12 @@ class Visit(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # Manual override for distance traveled to reach this visit (km), e.g.
+    # from home for the first stay in a trip, or from the previous stay
+    # otherwise. When blank, the frontend estimates it from the visited
+    # locations' coordinates and the previous visit in the stays timeline.
+    distance_km = models.FloatField(blank=True, null=True)
+
     # Generic relations for images and attachments
     images = GenericRelation('ContentImage', related_query_name='visit')
     attachments = GenericRelation('ContentAttachment', related_query_name='visit')
