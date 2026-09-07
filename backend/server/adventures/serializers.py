@@ -56,6 +56,7 @@ class ContentImageSerializer(CoordinateSerializerMixin, CustomModelSerializer):
         fields = [
             'id', 'image', 'is_primary', 'user', 'immich_id',
             'source', 'source_url', 'latitude', 'longitude',
+            'focal_x', 'focal_y',
         ]
         read_only_fields = ['id', 'user']
 

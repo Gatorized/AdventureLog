@@ -466,6 +466,12 @@ class ContentImage(models.Model):
         blank=True,
         null=True,
     )
+    # Focal point for this image when displayed as a cropped cover (e.g. a
+    # trip's primary image in card grids): fraction of width/height, 0-1,
+    # (0.5, 0.5) = center. Applied client-side via CSS object-position;
+    # doesn't affect the stored file itself.
+    focal_x = models.FloatField(default=0.5)
+    focal_y = models.FloatField(default=0.5)
     immich_id = models.CharField(max_length=200, null=True, blank=True)
     is_primary = models.BooleanField(default=False)
     source = models.CharField(
