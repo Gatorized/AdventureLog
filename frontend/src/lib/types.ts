@@ -72,6 +72,8 @@ export type ContentImage = {
 	source_url?: string | null;
 	latitude?: number | null;
 	longitude?: number | null;
+	focal_x?: number;
+	focal_y?: number;
 };
 
 export type Location = {

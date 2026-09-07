@@ -1,3 +1,5 @@
+import io
+
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -6,7 +8,9 @@ from adventures.throttling import ImageImportThrottle, ImageProxyThrottle
 from django.http import HttpResponse
 from django.db.models import Q
 from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.contrib.contenttypes.models import ContentType
+from PIL import Image
 from adventures.models import Location, Transportation, Note, Lodging, Visit, ContentImage
 from adventures.serializers import ContentImageSerializer, ImageMapPinSerializer
 from integrations.models import ImmichIntegration
@@ -134,6 +138,57 @@ class ContentImageViewSet(viewsets.ModelViewSet):
         instance.is_primary = True
         instance.save()
         return Response({"success": "Image set as primary image"})
+
+    @action(detail=True, methods=['post'])
+    def rotate(self, request, *args, **kwargs):
+        """Rotate the stored image 90 degrees and re-save it in place."""
+        instance = self.get_object()
+
+        if not instance.image:
+            return Response(
+                {"error": "No image file to rotate"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        direction = request.data.get('direction', 'cw')
+        if direction not in ('cw', 'ccw'):
+            return Response(
+                {"error": "direction must be 'cw' or 'ccw'"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            with default_storage.open(instance.image.name, 'rb') as fh:
+                original_bytes = fh.read()
+
+            with Image.open(io.BytesIO(original_bytes)) as img:
+                img_format = img.format
+                # PIL's ROTATE_270 is 90 clockwise; ROTATE_90 is 90 counter-clockwise.
+                transpose_method = (
+                    Image.Transpose.ROTATE_270 if direction == 'cw' else Image.Transpose.ROTATE_90
+                )
+                rotated = img.transpose(transpose_method)
+
+                buffer = io.BytesIO()
+                save_kwargs = {'quality': 95} if img_format in ('JPEG', 'WEBP') else {}
+                rotated.save(buffer, format=img_format, **save_kwargs)
+
+            old_name = instance.image.name
+            default_storage.delete(old_name)
+            # .save() goes back through ResizedImageField's own pipeline
+            # (resize/re-encode to WEBP), same as a fresh upload would.
+            instance.image.save(
+                old_name.rsplit('/', 1)[-1], ContentFile(buffer.getvalue()), save=True
+            )
+        except Exception:
+            logger.exception('Failed to rotate image %s', instance.id)
+            return Response(
+                {"error": "Failed to rotate image"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     @action(detail=False, methods=['get'], url_path='map_pins')
     def map_pins(self, request):

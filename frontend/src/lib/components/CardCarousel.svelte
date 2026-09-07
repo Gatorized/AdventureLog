@@ -51,6 +51,11 @@
 	function closeImageModal() {
 		showImageModal = false;
 	}
+
+	function handleImageUpdated(event: CustomEvent<ContentImage>) {
+		const updated = event.detail;
+		images = images.map((img) => (img.id === updated.id ? { ...img, ...updated } : img));
+	}
 </script>
 
 {#if showImageModal && sortedImages.length > 0}
@@ -58,6 +63,7 @@
 		images={sortedImages}
 		initialIndex={modalInitialIndex}
 		on:close={closeImageModal}
+		on:imageUpdated={handleImageUpdated}
 		{name}
 	/>
 {/if}
@@ -78,6 +84,8 @@
 						<img
 							src={sortedImages[currentSlide].image}
 							class="w-full h-48 object-cover transition-all group-hover:brightness-110"
+							style="object-position: {(sortedImages[currentSlide].focal_x ?? 0.5) *
+								100}% {(sortedImages[currentSlide].focal_y ?? 0.5) * 100}%;"
 							alt={name || 'Image'}
 						/>
 					</ImageFrame>
